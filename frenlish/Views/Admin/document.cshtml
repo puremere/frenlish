@@ -1,0 +1,522 @@
+﻿@model frenlish.ViewModel.courseVM
+@{
+    ViewBag.Title = "document";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<style>
+    .nav-tabs {
+        padding-right: 0px;
+    }
+
+        .nav-tabs li {
+            float: right !important;
+        }
+
+    .fieldholder {
+        /*width: 30%;
+            display: inline-block;*/
+        padding: 15px;
+    }
+
+    .REM {
+        border-radius: 5px;
+    }
+</style>
+<div class="row" style="background-color:white; padding:10px; margin:0px; margin-top:65px">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home" style=" color: #8d8d8d; ">لیست مطالب</a></li>
+        <li><a data-toggle="tab" href="#menu1" style=" color: #8d8d8d; ">تولید مطلب جدید</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active" style="padding-top:20px">
+
+
+            <div class="row">
+                
+                <div class="row fieldholder" style="width:25%;padding: 0 10px;display: inline-block;">
+                    <div class=" ">
+                        <span style="color:red; display:none">*</span>
+                        <input class="form-control" style="min-width:250px" type="text" id="searchinput" name="searchinput" placeholder="عبارت مورد نظر را جستجو کنید" />
+                    </div>
+                </div>
+
+                <div class="row fieldholder" style="width:25%;padding: 0 10px;display: inline-block;">
+                    <a id="changeBlogList" class="lgnsubmitt btn btn-primary">تایید</a>
+
+                </div>
+                <script>
+                    $("#changeBlogList").click(function () {
+                        var search = $("#searchinput").val();
+                        var cat = $("#catListblog option:selected").val();
+                        $.ajax({
+                            url: '/Admin/get',
+                            dataType: 'html',
+                            data: {
+                                search: search,
+                                cat: cat
+                            },
+                            success: function (data) {
+
+                                $("#Listholder").html(data);
+                            },
+                            error: function () {
+
+                            }
+                        });
+
+                    })
+                </script>
+                <div id="Listholder">
+                    <div class="row" style="padding:20px">
+                        <div style="overflow-x:auto;padding:10px">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" style="    background-image: -webkit-linear-gradient(top,#2a85ae 0,#246388 100%) !important;
+    background-image: -o-linear-gradient(top,#2a85ae 0,#246388 100%) !important;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#2a85ae),to(#246388)) !important;
+    background-image: linear-gradient(to bottom,#2a85ae 0,#246388 100%) !important;color: #fff">
+                                    <h3 class="panel-title"><i class="fa fa-shopping-basket fa-fw"></i>لیست دوره ها  </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="morris-area-chart">
+                                        <div style="overflow:auto">
+                                            <table class="table table-bordered table-hover table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            ID
+                                                        </th>
+                                                        <th>
+                                                            عنوان
+                                                        </th>
+                                                        <th>
+                                                            تصویر
+                                                        </th>
+                                                        <th>
+                                                           مشاهده  جلسات
+                                                        </th>
+
+                                                        <th>
+
+                                                        </th>
+
+                                                        <th>
+
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        if (Model.coursList != null)
+                                                        {
+                                                            foreach (var item in Model.coursList)
+                                                            {
+
+                                                                <tr>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.courseID)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.title)
+                                                                    </td>
+                                                                    <td style=" text-align:right">
+                                                                        <img  style="width:150px" src="/images/panelimages/@item.imageTitle" />
+                                                                     
+                                                                    </td>
+
+                                                                    <td style=" text-align:right">
+                                                                        <div class="btn btn-success"><a href="/admin/session?courseID=@item.courseID"></a></div>
+                                                                     
+                                                                    </td>
+                                                                   
+
+                                                                    <td style="text-align: center;">
+
+                                                                        @{
+                                                                            var ID = @item.courseID;
+                                                                            <a id=@ID class="btn btn-primary PEbutton" style="  margin:5px ; cursor: pointer;  padding: 5px; color: #fff; border-radius: 5px;">ویرایش</a>
+
+                                                                        }
+
+                                                                    </td>
+                                                                    <td style="text-align: center;">
+
+                                                                        @{
+
+                                                                            <a id=@ID class="btn btn-primary Dbutton" style="  margin:5px ; cursor: pointer;  padding: 5px; color: #fff; border-radius: 5px;">حذف</a>
+
+                                                                        }
+
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                        }
+                                                    }
+
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" id="detailholder" style="padding:0 35px ; display:none;">
+
+
+
+                    @using (Html.BeginForm("updateArticle", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "updateArticle" }))
+                    {
+
+                        <div style="padding: 15px 5px; border: 1px solid #d8d8d8; border-radius: 5px;">
+                            <div class="row">
+
+
+
+
+
+                                <div class="row fieldholder col-lg-3">
+                                    <label style="text-align: right">
+                                        عنوان :
+                                    </label>
+                                    <div>
+                                        <span style="color:red; display:none">*</span>
+                                        <input value="" type="text" id="titleupdate" name="titleupdate" required="required" class="form-control">
+                                    </div>
+
+
+                                </div>
+                               
+                                <div class="row fieldholder col-lg-3">
+
+                                    <label style="text-align: right">
+                                        عکس:
+                                    </label>
+
+                                    <div>
+                                        <input type="file" id="imageFileHolderEdit" name="image" required="required" class="form-control ">
+                                    </div>
+                                </div>
+
+
+
+                                <input id="IDupdate" name="IDupdate" hidden />
+                                <input id="imageupdate" name="imageupdate" hidden />
+
+                            </div>
+                            <div id="thumbholderEdior">
+
+                            </div>
+                         
+                            <script>
+
+
+                                $("#UpdateButt").click(function () {
+                                    // alert("aa");
+
+                                    var int = 0;
+                                    $(".REM2").each(function () {
+
+                                        if ($(this).val() === "") {
+                                            $(this).siblings("span").css("display", "inline-block");
+                                            int = 1;
+                                        }
+                                    })
+                                    if (int === 0) {
+                                        $("#updateArticle").submit();
+                                    }
+                                    else {
+                                        toastr.options = {
+                                            "debug": false,
+                                            "positionClass": "toast-top-center",
+                                            "onclick": null,
+                                            "fadeIn": 300,
+                                            "fadeOut": 1000,
+                                            "timeOut": 5000,
+                                            "extendedTimeOut": 1000
+                                        }
+                                        toastr.error('لطفاً تمامی موارد را کامل کنید')
+
+                                    }
+
+
+                                })
+                            </script>
+                           
+                        </div>
+
+                    }
+
+
+                </div>
+                <div class="modal fade" id="delArticlemodal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+
+                            <div class="modal-body">
+                                <p>آیا از حذف نظر اطمینان دارید؟</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="modalDelArticle">تایید</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    //tinymce.get('descriptionupdate').setContent("aaa");
+                    //alert("aa");
+                </script>
+                <script>
+
+                    var id = ""
+                    $(".PEbutton").click(function () {
+                        tinymce.get('descriptionupdate').setContent("aaa");
+                        var rowid = $(this).attr("id");
+                        var articles = @Html.Raw(Json.Encode(Model.coursList));
+                        $("#detailholder").css("display", "inline-block");
+
+                        $.each(articles, function (index, item) {
+                            if (item.courseID.toString() === rowid) {
+                                
+                                var imagaddress = "/images/panelimages/" + item.image;
+                                $("#titleupdate").val(item.title);
+                                $("#IDupdate").val(item.courseID);
+                                $("#imageupdate").val(item.image);
+                             
+                                
+                            }
+
+
+                        });
+
+                    });
+                    $(".Dbutton").click(function () {
+                        $("#delArticlemodal").modal('toggle');
+                        id = $(this).attr("id");
+
+
+                    })
+                    $("#modalDelArticle").click(function () {
+                        $.ajax({
+                            url: '/Admin/DeleteArticle',
+                            dataType: 'html',
+                            data: {
+                                id: id,
+                            },
+                            success: function (data) {
+                                window.location.reload();
+                            },
+                            error: function () {
+
+                            }
+                        });
+                    })
+                </script>
+
+            </div>
+
+
+
+
+        </div>
+        <div id="menu1" class="tab-pane fade" style="padding-top:20px">
+            @using (Html.BeginForm("setNewArticle", "Admin", FormMethod.Post,
+new { enctype = "multipart/form-data", id = "addArticle" }))
+            {
+
+
+                <div class="row" style="padding:10px">
+
+
+                    <div class="row fieldholder col-lg-3">
+                        <label> دسته بندی</label>
+
+                        @{
+                            List<SelectListItem> listItems = new List<SelectListItem>();
+                            if (Model.Catlist != null)
+                            {
+                                foreach (var item in Model.Catlist)
+                                {
+                                    listItems.Add(new SelectListItem
+                                    {
+                                        Text = item.title,
+                                        Value = item.articleCatID.ToString()
+                                    });
+
+                                }
+                            }
+
+
+                        }
+                        <div class=" ">
+                            <span style="color:red; display:none">*</span>
+                            @Html.DropDownList("catList", listItems, "-- انتخاب سرگروه --", new { id = "catList", name = "catList", style = "", @class = "form-control REM" })
+                        </div>
+
+
+                    </div>
+                    <div class="row fieldholder col-lg-3">
+                        <label style="text-align: right">
+                            عنوان :
+                        </label>
+                        <div>
+                            <span style="color:red; display:none">*</span>
+
+                            <input value="" type="text" id="title" name="title" required="required" class="form-control  REM">
+                        </div>
+
+
+                    </div>
+                    <div class="row fieldholder col-lg-3" style="min-height:70px">
+
+                        <label style="text-align: right">
+                            تگ ها :
+                        </label>
+
+                        <div>
+                            <span style="color:red; display:none">*</span>
+                            <input data-role="tagsinput" id="tag" name="tag" required="required" class="form-control REM">
+                        </div>
+
+
+                    </div>
+                    <div class="row fieldholder col-lg-3">
+                        <div style="width:70%;display:inline-block">
+                            <label style="text-align: right">
+                                عکس:
+                            </label>
+
+                            <div>
+
+                                <input multiple type="file" id="imageFileHolder" name="image" required="required" class="form-control ">
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+
+                </div>
+                <div id="thumbholder">
+
+                </div>
+                <div class="row" style="padding:10px">
+                    <div class="row fieldholder col-lg-12">
+                        <label style="text-align: right">
+                            متن :
+                        </label>
+                        <div>
+                            <span style="color:red; display:none">*</span>
+
+                            <textarea id="description" name="description" required="required" class="form-control"></textarea>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="row fieldholder" style="width:25%;padding: 0 10px;display: inline-block;">
+                        <a id="CRprocuct" class="lgnsubmitt btn btn-primary">تایید</a>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <script>
+
+
+
+
+                    $("#CRprocuct").click(function () {
+                        $(this).siblings("span").css("display", "none");
+                        var addint = 0;
+                        $(".REM").each(function () {
+
+                            if ($(this).val() === "") {
+                                $(this).siblings("span").css("display", "inline-block");
+                                addint = 1;
+                            }
+
+
+
+
+                        })
+                        if (addint === 0) {
+                            $("#addArticle").submit();
+                        }
+                        else {
+                            toastr.options = {
+                                "debug": false,
+                                "positionClass": "toast-top-center",
+                                "onclick": null,
+                                "fadeIn": 300,
+                                "fadeOut": 1000,
+                                "timeOut": 5000,
+                                "extendedTimeOut": 1000
+                            }
+                            toastr.error('لطفاً تمامی موارد را کامل کنید')
+
+                        }
+
+
+                    })
+                </script>
+                <script language="javascript" type="text/javascript">
+
+                    $("#imageFileHolder").on('change', function () {
+
+                       // $("#dvPreview").html("");
+                        var input = this;
+                        if (input.files && input.files[0]) {
+
+                                            var formData = new FormData();
+                            formData.append('blob', input.files[0]);
+                            formData.append('filename', 'add');
+                                            var MyAppUrlSettings = {
+                                                MyUsefulUrl: '@Url.Action("GetImageForMCE", "admin")'
+                                            }
+
+                                            var request = new XMLHttpRequest();
+                                            request.open('POST', MyAppUrlSettings.MyUsefulUrl);
+                                            request.send(formData);
+                                            request.onreadystatechange = function() {
+                                                if (request.readyState == 4 && request.status == 200)
+                                                {
+                                                                                        $('#thumbholder').html(request.responseText);
+                                                                                        $("#main-cropper").css("display", "none");
+                                                                                        $("#loading").css("display", "none");
+
+
+                                                }
+                                                }
+                        }
+                        else {
+                            alert("s")
+                        }
+
+                    });
+                </script>
+
+
+            }
+        </div>
+       
+    </div>
+</div>
